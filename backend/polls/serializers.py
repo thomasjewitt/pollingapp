@@ -3,7 +3,8 @@ from polls.models import Poll, PollOption, PollResponse
 
 class PollOptionSerializer(serializers.ModelSerializer):
 
-    id = serializers.UUIDField()
+    id = serializers.UUIDField(required=False)
+    option = serializers.CharField(required=False)
 
     class Meta:
         model = PollOption
@@ -17,7 +18,9 @@ class PollResponseSerializer(serializers.ModelSerializer):
     poll = serializers.UUIDField()
 
     def create(self, validated_data):
-        option_ids = [option["id"] for option in validated_data.pop('options')]
+        popped_options = validated_data.pop('options')
+        print(popped_options)
+        option_ids = [option["id"] for option in popped_options]
         options = PollOption.objects.filter(id__in=option_ids)
         poll_id = validated_data.pop('poll')
         poll = Poll.objects.get(pk=poll_id)
